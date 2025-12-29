@@ -1,6 +1,6 @@
-import { Component, signal } from '@angular/core';
-import { RouterLinkActive } from "@angular/router";
+import { Component, Input, signal } from '@angular/core';
 import { Register } from "../account/register/register";
+import { User } from '../../types';
 
 @Component({
   selector: 'app-home',
@@ -10,6 +10,7 @@ import { Register } from "../account/register/register";
 })
 export class Home {
   protected registerMode = signal(false);
+  @Input({required: true}) membersFromApp: User[] = [];
 
   showRegister() {
     this.registerMode.set(true);
