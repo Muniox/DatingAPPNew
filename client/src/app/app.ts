@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Nav } from '../layout/nav/nav';
-import { AccountService } from '../core/account-service';
+import { AccountService } from '../core';
 import { Roles, User } from '../types';
 import { Home } from "../features/home/home";
 

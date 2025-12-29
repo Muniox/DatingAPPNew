@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AccountService } from '../../core/account-service';
+import { AccountService } from '../../core';
 
 @Component({
   selector: 'app-nav',
