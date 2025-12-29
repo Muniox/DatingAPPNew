@@ -5,6 +5,7 @@ import { Nav } from '../layout/nav/nav';
 import { AccountService } from '../core/account-service';
 import { lastValueFrom } from 'rxjs';
 import { Roles, User } from '../types';
+import { Home } from "../features/home/home";
 
 
 interface member {
@@ -15,7 +16,7 @@ interface member {
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Nav],
+  imports: [RouterOutlet, Nav, Home],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
