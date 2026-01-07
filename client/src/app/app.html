@@ -2,4 +2,7 @@
 
 <div [class]="router.url !== '/' ? 'mt-24 container mx-auto' : ''">
   <router-outlet />
+  <div class="toast toast-bottom toast-end">
+    <ng-container #toastOutlet></ng-container>
+  </div>
 </div>

@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import {AfterViewInit, Component, inject, OnDestroy, OnInit, signal, ViewChild, ViewContainerRef} from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { Nav } from '../layout/nav/nav';
 import { AccountService } from '../core';
 import { Roles, User } from '../types';
+import {ToastService} from '../core/toast-service';
 
 @Component({
   selector: 'app-root',
@@ -11,16 +12,24 @@ import { Roles, User } from '../types';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App implements OnInit, OnDestroy {
+export class App implements OnInit, OnDestroy, AfterViewInit {
   private accountService = inject(AccountService);
   protected router = inject(Router);
   private http =  inject(HttpClient);
+  private toastService = inject(ToastService);
+
   protected title = 'Dating app';
   protected members = signal<User[]>([]);
-  
+
+  @ViewChild('toastOutlet', {read: ViewContainerRef}) toastOutlet!: ViewContainerRef;
+
   ngOnInit(): void {
     this.getMembers();
     this.setCurrentUser();
+  }
+
+  ngAfterViewInit(): void {
+    this.toastService.setViewContainerRef(this.toastOutlet);
   }
 
   setCurrentUser() {
@@ -42,10 +51,10 @@ export class App implements OnInit, OnDestroy {
       complete: () => console.log('Completed the http request')
     })
   }
-  
+
   ngOnDestroy(): void {
     throw new Error('Method not implemented.');
   }
-  
-  
+
+
 }
