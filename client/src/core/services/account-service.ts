@@ -13,6 +13,14 @@ export class AccountService {
 
   baseUrl = 'https://localhost:7177/api';
 
+    loadUserFromStorage(): void {
+    const userString = localStorage.getItem(Roles.user);
+    if (userString) {
+      const user = JSON.parse(userString) as User;
+      this.currentUser.set(user);
+    }
+  }
+
   register(creds: RegisterCreds) {
     return this.http.post<User>(this.baseUrl + 'account/register', creds).pipe(
       tap(user => {
