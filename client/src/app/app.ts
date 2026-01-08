@@ -2,9 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import {AfterViewInit, Component, inject, OnDestroy, OnInit, signal, ViewChild, ViewContainerRef} from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { Nav } from '../layout/nav/nav';
-import { AccountService } from '../core';
+import { AccountService, ToastService } from '../core/services';
 import { Roles, User } from '../types';
-import {ToastService} from '../core/toast-service';
 
 @Component({
   selector: 'app-root',

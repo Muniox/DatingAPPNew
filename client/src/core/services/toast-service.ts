@@ -1,5 +1,5 @@
-import {ComponentRef, Injectable, ViewContainerRef} from '@angular/core';
-import {Toast} from '../shared/toast/toast';
+import {Injectable, ViewContainerRef} from '@angular/core';
+import {Toast} from '../../shared/toast/toast';
 
 const toastClases = {
 success: 'alert-success',
