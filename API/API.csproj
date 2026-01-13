@@ -20,8 +20,10 @@
 
   <ItemGroup>
     <Folder Include="DTOs\" />
+    <Folder Include="Errors\" />
     <Folder Include="Extensions\" />
     <Folder Include="Interfaces\" />
+    <Folder Include="Middleware\" />
     <Folder Include="Services\" />
 	<Content Update="@(Content)">
 		<Visible Condition="'%(NuGetItemType)' == 'Content'">false</Visible>

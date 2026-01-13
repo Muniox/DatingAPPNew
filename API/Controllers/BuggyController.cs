@@ -1,34 +1,33 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace API.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class BuggyController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class BuggyController : ControllerBase
+    [HttpGet("auth")]
+    public IActionResult GetAuth()
     {
-        [HttpGet("auth")]
-        public IActionResult GetAuth()
-        {
-            return Unauthorized();
-        }
+        return Unauthorized();
+    }
 
-        [HttpGet("not-found")]
-        public IActionResult GetNotFound()
-        {
-            return NotFound();
-        }
+    [HttpGet("not-found")]
+    public IActionResult GetNotFound()
+    {
+        return NotFound();
+    }
 
-        [HttpGet("server-error")]
-        public IActionResult GetServerError()
-        {
-            throw new Exception("This is a server error");
-        }
+    [HttpGet("server-error")]
+    public IActionResult GetServerError()
+    {
+        throw new Exception("This is a server error");
+    }
 
-        [HttpGet("bad-request")]
-        public IActionResult GetBadRequest()
-        {
-            return BadRequest("This was not good request");
-        }
+    [HttpGet("bad-request")]
+    public IActionResult GetBadRequest()
+    {
+        return BadRequest("This was not good request");
     }
 }

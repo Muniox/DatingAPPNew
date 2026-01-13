@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { LoginCreds, RegisterCreds, Roles, User } from '../../types';
 import { tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -10,10 +11,9 @@ export class AccountService {
   private http = inject(HttpClient);
 
   currentUser = signal<User | null>(null);
+  baseUrl = environment.baseUrl;
 
-  baseUrl = 'https://localhost:7177/api';
-
-    loadUserFromStorage(): void {
+  loadUserFromStorage(): void {
     const userString = localStorage.getItem(Roles.user);
     if (userString) {
       const user = JSON.parse(userString) as User;
@@ -30,7 +30,7 @@ export class AccountService {
   }
 
   login(creds: LoginCreds) {
-    return this.http.post<User>(this.baseUrl + '/account/login', creds).pipe(
+    return this.http.post<User>(this.baseUrl + 'account/login', creds).pipe(
       tap((user) => {
         if (user) this.setCurrentUser(user)
       })
