@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Entities;
 
@@ -18,4 +19,5 @@ public class Member
 
     // Navigation propterty
     public AppUser User {get; set;} = null!;
+    public List<Photo> Photos { get; set; } = [];
 }
