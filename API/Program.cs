@@ -20,7 +20,12 @@ builder.Services.AddDbContext<API.Data.AppDbContext>(options =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddCors();
+// Services
 builder.Services.AddScoped<ITokenService, TokenService>();
+
+// Repositories
+builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
