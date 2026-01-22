@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace API.Entities;
 
@@ -18,6 +19,9 @@ public class Member
 
 
     // Navigation propterty
+    [JsonIgnore]
     public AppUser User {get; set;} = null!;
+    
+    [JsonIgnore]
     public List<Photo> Photos { get; set; } = [];
 }
