@@ -1,2 +1,3 @@
 export * from "./user"
-export * from  "./ApiError"
+export * from  "./apiError"
+export * from "./member"

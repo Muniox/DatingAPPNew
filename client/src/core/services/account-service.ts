@@ -11,7 +11,7 @@ export class AccountService {
   private http = inject(HttpClient);
 
   currentUser = signal<User | null>(null);
-  baseUrl = environment.baseUrl;
+  private baseUrl = environment.baseUrl;
 
   loadUserFromStorage(): void {
     const userString = localStorage.getItem(Roles.user);
