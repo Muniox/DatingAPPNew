@@ -1,18 +1,15 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { MemberService } from '../../../core/services';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
 import { filter } from 'rxjs';
 import { Member } from '../../../types';
 
 @Component({
   selector: 'app-member-detailed',
-  imports: [AsyncPipe, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './member-detailed.html',
   styleUrl: './member-detailed.css',
 })
 export class MemberDetailed implements OnInit {
-  private memberService = inject(MemberService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -21,7 +18,7 @@ export class MemberDetailed implements OnInit {
 
   ngOnInit(): void {
     this.route.data.subscribe({
-      next: data => this.member.set(data['member']), 
+      next: data => this.member.set(data['member']),
     })
     this.title.set(this.route.firstChild?.snapshot?.title)
 
