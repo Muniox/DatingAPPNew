@@ -3,11 +3,12 @@ import {MemberService} from '../../../core/services';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 import { Photo } from "../../../types/photo";
+import { AsyncPipe } from '@angular/common';
 
 
 @Component({
   selector: 'app-member-photos',
-  imports: [],
+  imports: [AsyncPipe],
   templateUrl: './member-photos.html',
   styleUrl: './member-photos.css',
 })
@@ -20,4 +21,10 @@ export class MemberPhotos {
   protected photos$?: Observable<Photo[]> = this.memberId
     ? this.memberService.getMemberPhotos(this.memberId)
     : undefined;
+
+  get photoMocks() {
+    return Array.from({length: 20}, (_, i) => ({
+      url: '/user.png'
+    }))
+  }
 }
