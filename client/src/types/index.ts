@@ -1,3 +1,5 @@
 export * from "./user"
 export * from  "./apiError"
 export * from "./member"
+export * from "./photo"
+export * from "./editableMember"
