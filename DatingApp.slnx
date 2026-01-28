@@ -5,4 +5,9 @@
     <Platform Name="x86" />
   </Configurations>
   <Project Path="API/API.csproj" />
+  <Project Path="client/client.esproj">
+    <BuildType Project="Debug" />
+    <Platform Project="AnyCPU" />
+    <Build />
+  </Project>
 </Solution>
