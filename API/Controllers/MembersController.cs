@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -37,6 +39,32 @@ public class MembersController(IMemberRepository memberRepository) : ControllerB
     {
         var photos = await memberRepository.GetPhotosForMemberAsync(id);
         return Ok(photos);
+    }
+
+    [HttpPut]
+    public async Task<ActionResult> UpdateMember(MemberUpdateDto memberUpdateDto)
+    {
+        var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (memberId is null) return BadRequest("Oops - no id found in token");
+
+        var member = await memberRepository.GetMemberByIdAsync(memberId);
+
+        if (member is null) return BadRequest("Could not get member");
+
+        member.DisplayName = memberUpdateDto.DisplayName ?? member.DisplayName;
+        member.Description = memberUpdateDto.Description ?? member.Description;
+        member.City = memberUpdateDto.City ?? member.City;
+        member.Country = memberUpdateDto.Country ?? member.Country;
+
+        memberRepository.Update(member); // optional
+
+        // Note: SaveAllAsync returns false if SaveChangesAsync() > 0 check fails (no changes made)
+        // Better approach: use try-catch and return true from SaveAllAsync, let exceptions bubble up
+        if (!await memberRepository.SaveAllAsync())
+            return BadRequest("Failed to update user");
+
+        return NoContent();
     }
 }
 
