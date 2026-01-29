@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { EditableMember, Member } from '../../../types';
 import { DatePipe } from '@angular/common';
-import { MemberService, ToastService } from '../../../core/services';
+import { AccountService, MemberService, ToastService } from '../../../core/services';
 import { FormsModule, NgForm } from '@angular/forms';
 
 @Component({
@@ -28,6 +28,8 @@ export class MemberProfile implements OnInit, OnDestroy {
 
   protected memberService = inject(MemberService);
   private toast = inject(ToastService);
+  private accountService = inject(AccountService);
+
   protected editableMember = signal<EditableMember>({
     displayName: '',
     city: '',
@@ -50,6 +52,13 @@ export class MemberProfile implements OnInit, OnDestroy {
     const updatedMember = { ...this.memberService.member(), ...this.editableMember() };
     this.memberService.updateMember(this.editableMember()).subscribe({
       next: () => {
+        const currentUser = this.accountService.currentUser();
+
+        if(currentUser && updatedMember.displayName !== currentUser?.displayName) {
+          currentUser.displayName = updatedMember.displayName;
+          this.accountService.setCurrentUser(currentUser);
+        }
+
         this.toast.success('Profile updated successfully');
         this.memberService.editMode.set(false);
         this.memberService.member.set(updatedMember as Member);
