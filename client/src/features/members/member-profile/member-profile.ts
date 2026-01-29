@@ -7,7 +7,6 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { EditableMember, Member } from '../../../types';
 import { DatePipe } from '@angular/common';
 import { MemberService, ToastService } from '../../../core/services';
@@ -29,9 +28,6 @@ export class MemberProfile implements OnInit, OnDestroy {
 
   protected memberService = inject(MemberService);
   private toast = inject(ToastService);
-  private route = inject(ActivatedRoute);
-
-  protected member = signal<Member | undefined>(undefined);
   protected editableMember = signal<EditableMember>({
     displayName: '',
     city: '',
@@ -40,26 +36,23 @@ export class MemberProfile implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    this.route.parent?.data.subscribe((data) => {
-      this.member.set(data['member']);
-    });
-
     this.editableMember.set({
-      displayName: this.member()?.displayName || '',
-      description: this.member()?.description || '',
-      country: this.member()?.country || '',
-      city: this.member()?.city || '',
+      displayName: this.memberService.member()?.displayName || '',
+      description: this.memberService.member()?.description || '',
+      country: this.memberService.member()?.country || '',
+      city: this.memberService.member()?.city || '',
     });
   }
 
   updateProfile() {
-    if (!this.member()) return;
+    if (!this.memberService.member()) return;
 
-    const updatedMember = { ...this.member(), ...this.editableMember() };
+    const updatedMember = { ...this.memberService.member(), ...this.editableMember() };
     this.memberService.updateMember(this.editableMember()).subscribe({
       next: () => {
         this.toast.success('Profile updated successfully');
         this.memberService.editMode.set(false);
+        this.memberService.member.set(updatedMember as Member);
         this.editForm?.reset(updatedMember);
       },
     });
