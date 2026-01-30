@@ -10,7 +10,7 @@ public class Photo
     public string?  PublicId { get; set; }
 
     // Foreign key
-    [JsonIgnore]
+    // [JsonIgnore]
     public string MemberId { get; set; } = null!;
 
     [JsonIgnore]

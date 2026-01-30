@@ -7,20 +7,11 @@ using Microsoft.Extensions.Options;
 
 namespace API.Services;
 
-public class PhotoService : IPhotoService
+public class PhotoService(IOptions<CloudinarySettings> config) : IPhotoService
 {
-    private readonly Cloudinary _cloudinary;
-    public PhotoService(IOptions<CloudinarySettings> config)
-    {
-        var account = new Account
-        {
-            Cloud = config.Value.CloudName,
-            ApiKey = config.Value.ApiKey,
-            ApiSecret = config.Value.ApiSecret
-        };
-
-        _cloudinary = new Cloudinary(account);
-    }
+    private readonly Cloudinary _cloudinary = new Cloudinary(
+        new Account(config.Value.CloudName, config.Value.ApiKey, config.Value.ApiSecret)
+    );
 
     public async Task<DeletionResult> DeletePhotoAsync(string publicId)
     {

@@ -4,6 +4,7 @@ using API.Entities;
 using API.Extensions;
 using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -11,7 +12,7 @@ namespace API.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class MembersController(IMemberRepository memberRepository) : ControllerBase
+public class MembersController(IMemberRepository memberRepository, IPhotoService photoService) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<Member>>> GetMembers()
@@ -66,6 +67,39 @@ public class MembersController(IMemberRepository memberRepository) : ControllerB
             return BadRequest("Failed to update user");
 
         return NoContent();
+    }
+
+    [HttpPost("add-photo")]
+    public async Task<ActionResult<Photo>> AddPhoto([FromForm]IFormFile file)
+    {
+        var memberId = User.GetMemberId();
+
+        var member = await memberRepository.GetMemberForUpdate(memberId);
+
+        if (member is null) return BadRequest("Cannot update member");
+
+        var result = await photoService.UploadPhotoAsync(file);
+
+        if (result.Error is not null) return BadRequest(result.Error.Message);
+
+        var photo = new Photo
+        {
+            Url = result.SecureUrl.AbsoluteUri,
+            PublicId = result.PublicId,
+            MemberId = User.GetMemberId(),
+        };
+
+        if (member.ImageUrl is null)
+        {
+            member.ImageUrl = photo.Url;
+            member.User.ImageUrl = photo.Url;
+        }
+
+        member.Photos.Add(photo);
+
+        if (!await memberRepository.SaveAllAsync()) return BadRequest("Problem adding photo");
+
+        return photo;
     }
 }
 
