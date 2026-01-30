@@ -14,7 +14,7 @@ export class MemberService {
   private baseUrl = environment.baseUrl;
 
   member = signal<Member | null>(null)
-  editMode = signal(false);
+  editMode = signal(true); //tymczasowo na true! aby stestować
 
 
   getMembers() {
