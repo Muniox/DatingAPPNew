@@ -21,7 +21,9 @@ builder.Services.AddDbContext<API.Data.AppDbContext>(options =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddCors();
+
 // Services
+builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 // Repositories
