@@ -14,7 +14,7 @@ export class MemberService {
   private baseUrl = environment.baseUrl;
 
   member = signal<Member | null>(null)
-  editMode = signal(true); //tymczasowo na true! aby stestować
+  editMode = signal(false); //tymczasowo na true! aby stestować
 
 
   getMembers() {
@@ -41,5 +41,9 @@ export class MemberService {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<Photo>(this.baseUrl + 'members/add-photo', formData);
+  }
+
+  setMainPhoto(photo: Photo) {
+    return this.http.put(this.baseUrl + 'members/set-main-photo/' + photo.id, {});
   }
 }
