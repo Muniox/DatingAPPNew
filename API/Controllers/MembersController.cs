@@ -101,5 +101,27 @@ public class MembersController(IMemberRepository memberRepository, IPhotoService
 
         return photo;
     }
+
+    [HttpPut("set-main-photo/{photoId}")]
+    public async Task<ActionResult> SetMainPhoto(int photoId)
+    {
+        var member = await memberRepository.GetMemberForUpdate(User.GetMemberId());
+
+        if (member is null) return BadRequest("Cannot get member from token");
+
+        var photo = member.Photos.SingleOrDefault(x => x.Id == photoId);
+
+        if (member.ImageUrl == photo?.Url || photo == null)
+        {
+            return BadRequest("Cannot set this as main image");
+        }
+
+        member.ImageUrl = photo.Url;
+        member.User.ImageUrl = photo.Url;
+
+        if (!await memberRepository.SaveAllAsync()) return BadRequest("Problem setting main photo");
+
+        return NoContent();
+    }
 }
 
