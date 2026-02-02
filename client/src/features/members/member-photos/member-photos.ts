@@ -3,10 +3,11 @@ import { AccountService, MemberService } from '../../../core/services';
 import { ActivatedRoute } from '@angular/router';
 import { Photo } from '../../../types/photo';
 import { ImageUpload } from '../../../shared/image-upload/image-upload';
+import { StarButton } from "../../../shared/star-button/star-button";
 
 @Component({
   selector: 'app-member-photos',
-  imports: [ImageUpload],
+  imports: [ImageUpload, StarButton],
   templateUrl: './member-photos.html',
   styleUrl: './member-photos.css',
 })
@@ -15,7 +16,7 @@ export class MemberPhotos implements OnInit {
   private accountService = inject(AccountService);
   private route = inject(ActivatedRoute);
   protected photos = signal<Photo[]>([]);
-  protected loading = signal<Boolean>(false);
+  protected loading = signal<boolean>(false);
 
   ngOnInit(): void {
     const memberId = this.route.parent?.snapshot.paramMap.get('id');

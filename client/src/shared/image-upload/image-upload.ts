@@ -11,7 +11,7 @@ export class ImageUpload {
   protected isDragging = false;
   private fileToUpload: File | null = null;
   uploadFile = output<File>();
-  loading = input<Boolean>(false);
+  loading = input<boolean>(false);
 
   onDragOver(event: DragEvent) {
     event.preventDefault();
