@@ -4,11 +4,19 @@
       @for (photo of photos(); track photo.id) {
         <div class="relative">
           <img [src]="photo.url" alt="photo of member" class="w-full rounded-lg" />
-          <app-star-button 
-            [disabled]="photo.url === memberService.member()?.imageUrl"
-            [selected]="photo.url === memberService.member()?.imageUrl"
-            (clickEvent)="setMainPhoto(photo)"
-          />
+          @if (isOwnProfile()) {
+            <app-star-button
+              [disabled]="photo.url === memberService.member()?.imageUrl"
+              [selected]="photo.url === memberService.member()?.imageUrl"
+              (clickEvent)="setMainPhoto(photo)"
+              class="absolute top-1 right-1"
+            />
+            <app-delete-button
+              (clickEvent)="deletePhoto(photo.id)"
+              [disabled]="photo.url === memberService.member()?.imageUrl"
+              class="absolute top-1 left-1"
+            />
+          }
         </div>
       }
     </div>

@@ -1,22 +1,24 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { AccountService, MemberService } from '../../../core/services';
 import { ActivatedRoute } from '@angular/router';
 import { Photo } from '../../../types/photo';
-import { ImageUpload } from '../../../shared/image-upload/image-upload';
-import { StarButton } from "../../../shared/star-button/star-button";
+import { DeleteButton, ImageUpload, StarButton } from '../../../shared';
 
 @Component({
   selector: 'app-member-photos',
-  imports: [ImageUpload, StarButton],
+  imports: [ImageUpload, StarButton, DeleteButton],
   templateUrl: './member-photos.html',
   styleUrl: './member-photos.css',
 })
 export class MemberPhotos implements OnInit {
   protected memberService = inject(MemberService);
-  private accountService = inject(AccountService);
+  protected accountService = inject(AccountService);
   private route = inject(ActivatedRoute);
   protected photos = signal<Photo[]>([]);
   protected loading = signal<boolean>(false);
+  protected isOwnProfile = computed(() =>
+    this.accountService.currentUser()?.id === this.memberService.member()?.id
+  );
 
   ngOnInit(): void {
     const memberId = this.route.parent?.snapshot.paramMap.get('id');
@@ -32,16 +34,16 @@ export class MemberPhotos implements OnInit {
   onUploadImage(file: File) {
     this.loading.set(true);
     this.memberService.uploadPhoto(file).subscribe({
-      next: photo => {
+      next: (photo) => {
         this.memberService.editMode.set(false);
         this.loading.set(false);
-        this.photos.update(photos => [...photos, photo]);
+        this.photos.update((photos) => [...photos, photo]);
       },
-      error: error => {
+      error: (error) => {
         console.log('Error uploading image: ', error);
-        this.loading.set(false)
-      }
-    })
+        this.loading.set(false);
+      },
+    });
   }
 
   setMainPhoto(photo: Photo) {
@@ -51,14 +53,22 @@ export class MemberPhotos implements OnInit {
         if (currentUser) {
           currentUser.imageUrl = photo.url;
           this.accountService.setCurrentUser(currentUser);
-          this.memberService.member.update(member => {
+          this.memberService.member.update((member) => {
             if (member) {
               return { ...member, imageUrl: photo.url };
             }
             return member;
-          })
+          });
         }
-      }
-    })
+      },
+    });
+  }
+
+  deletePhoto(photoId: number) {
+    this.memberService.deletePhoto(photoId).subscribe({
+      next: () => {
+        this.photos.update((photos) => photos.filter((photo) => photo.id !== photoId));
+      },
+    });
   }
 }
