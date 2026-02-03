@@ -2,6 +2,7 @@
   <span>{{ label() }}</span>
   <input
     [type]="type()"
+    [attr.max]="maxDate() || null"
     class="input w-full"
     [class.input-error]="control.invalid && control.touched"
     [class.input-success]="control.valid && control.touched"

@@ -1,13 +1,12 @@
 <div class="card bg-base-100 w-1/2 mx-auto flex flex-col p-6 rounded-lg shadow-lg">
   <div class="card-title justify-center text-3xl text-primary">Sign up</div>
   <div class="card-body w-full">
-
     <div class="steps">
       <li class="step step-primary">Credentials</li>
-      <li class="step" [class.step-primary]="curentStep() === 2">Profile</li>
+      <li class="step" [class.step-primary]="currentStep() === 2">Profile</li>
     </div>
 
-    @if (curentStep() === 1) {
+    @if (currentStep() === 1) {
       <form [formGroup]="credentialsForm" class="flex flex-col gap-4 w-full steps px-1">
         <app-text-input class="mt-2" label="Email" formControlName="email" />
         <app-text-input label="Display name" formControlName="displayName" />
@@ -32,9 +31,22 @@
       </form>
     }
 
-    @if (curentStep() === 2) {
-      <form [formGroup]="profileForm" class="flex flex-col w-full gap-4 steps">
-        <div>Profile form goes here</div>
+    @if (currentStep() === 2) {
+      <form [formGroup]="profileForm" class="flex flex-col w-full gap-4 steps px-1">
+        <div class="flex items-center gap-4">
+          <div class="font-semibold">Gender:</div>
+          <label class="flex gap-3 items-center">
+            <span>Male</span>
+            <input type="radio" class="radio radio-primary" formControlName="gender" value="male" />
+          </label>
+          <label class="flex gap-3 items-center">
+            <span>Female</span>
+            <input type="radio" class="radio radio-primary" formControlName="gender" value="female"/>
+          </label>
+        </div>
+        <app-text-input [maxDate]="getMaxDate()" type="date" label="dateOfBirth" formControlName="dateOfBirth" />
+        <app-text-input label="City" formControlName="city" />
+        <app-text-input label="country" formControlName="country" />
 
         <div class="flex items-center justify-end gap-3">
           <button (click)="prevStep()" class="btn" type="button">Back</button>

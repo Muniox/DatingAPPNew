@@ -1,5 +1,4 @@
-import {Component, inject, input, OnInit, output, signal} from '@angular/core';
-import { RegisterCreds, User } from '../../../types';
+import {Component, inject, OnInit, output, signal} from '@angular/core';
 import { AccountService } from '../../../core/services';
 import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {JsonPipe} from '@angular/common';
@@ -16,8 +15,7 @@ export class Register implements OnInit {
   private fb = inject(FormBuilder);
 
   cancelRegister = output<boolean>();
-  protected creds = {} as RegisterCreds
-  protected curentStep = signal<number>(1);
+  protected currentStep = signal<number>(1);
 
   protected credentialsForm: FormGroup = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -44,7 +42,7 @@ export class Register implements OnInit {
     return (control: AbstractControl): ValidationErrors | null => {
       const parent = control.parent
       if (!parent) return null;
-      
+
       const matchValue = parent.get(matchTo)?.value;
       return control.value === matchValue ? null : {passwordMismatch: true}
     }
@@ -52,14 +50,19 @@ export class Register implements OnInit {
 
   nextStep() {
     if (this.credentialsForm.valid) {
-      this.curentStep.update(prevStep => prevStep + 1);
+      this.currentStep.update(prevStep => prevStep + 1);
     }
   }
 
   prevStep() {
-    this.curentStep.update(prevStep => prevStep - 1);
+    this.currentStep.update(prevStep => prevStep - 1);
   }
 
+  getMaxDate() {
+    const today = new Date();
+    today.setFullYear(today.getFullYear() -18);
+    return today.toISOString().split('T')[0];
+  }
 
   register() {
     if (this.profileForm.valid && this.credentialsForm.valid) {
