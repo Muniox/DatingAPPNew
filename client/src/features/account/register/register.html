@@ -4,22 +4,25 @@
     <form [formGroup]="registerForm" class="flex flex-col gap-4 w-full" (ngSubmit)="register()">
       <label class="floating-label">
         <span>Email</span>
-        <input
-          type="text"
-          class="input w-full"
-          formControlName="email"
-          placeholder="Email"
-        />
+        <input type="text" class="input w-full" formControlName="email" placeholder="Email" />
       </label>
 
-      <label class="floating-label">
+      <label class="floating-label text-left">
         <span>Display Name</span>
         <input
           type="text"
           class="input w-full"
+          [class.input-error]="
+            registerForm.controls['displayName'].invalid &&
+            registerForm.controls['displayName'].touched
+          "
           formControlName="displayName"
           placeholder="Display Name"
         />
+        @if(registerForm.controls['displayName'].invalid &&
+            registerForm.controls['displayName'].touched) {
+              <div class="validation-hint text-error text-xs">Display name is required</div>
+            }
       </label>
 
       <label class="floating-label">
@@ -44,15 +47,15 @@
 
       <div class="flex items-center justify-end gap-3">
         <button (click)="cancel()" class="btn" type="button">Cancel</button>
-        <button 
-        [disabled]="registerForm.invalid"
-        class="btn btn-primary" type="submit">Register</button>
+        <button [disabled]="registerForm.invalid" class="btn btn-primary" type="submit">
+          Register
+        </button>
       </div>
     </form>
   </div>
 
   <div class="flex flex-col items-start px-3 w-full mockup-code text-lg">
-    <div>Form value: {{registerForm.value | json}}</div>
-    <div>Form status: {{registerForm.status | json}}</div>
+    <div>Form value: {{ registerForm.value | json }}</div>
+    <div>Form status: {{ registerForm.status | json }}</div>
   </div>
 </div>
