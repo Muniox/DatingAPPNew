@@ -1,4 +1,4 @@
-import {Component, inject, input, OnInit, output} from '@angular/core';
+import {Component, inject, input, OnInit, output, signal} from '@angular/core';
 import { RegisterCreds, User } from '../../../types';
 import { AccountService } from '../../../core/services';
 import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
@@ -17,16 +17,25 @@ export class Register implements OnInit {
 
   cancelRegister = output<boolean>();
   protected creds = {} as RegisterCreds
-  protected registerForm: FormGroup = this.fb.nonNullable.group({
+  protected curentStep = signal<number>(1);
+
+  protected credentialsForm: FormGroup = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     displayName: ['', Validators.required],
     password: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(8)]],
     confirmPassword: ['', [Validators.required, this.matchValues('password')]]
   });
 
+  protected profileForm: FormGroup = this.fb.nonNullable.group({
+    gender: ['', Validators.required],
+    dateOfBirth: ['', Validators.required],
+    city: ['', Validators.required],
+    country: ['', Validators.required],
+  });
+
   ngOnInit() {
-    this.registerForm.controls['password'].valueChanges.subscribe(() => {
-      this.registerForm.controls['confirmPassword'].updateValueAndValidity();
+    this.credentialsForm.controls['password'].valueChanges.subscribe(() => {
+      this.credentialsForm.controls['confirmPassword'].updateValueAndValidity();
     });
   }
 
@@ -41,9 +50,22 @@ export class Register implements OnInit {
     }
   }
 
+  nextStep() {
+    if (this.credentialsForm.valid) {
+      this.curentStep.update(prevStep => prevStep + 1);
+    }
+  }
+
+  prevStep() {
+    this.curentStep.update(prevStep => prevStep - 1);
+  }
+
 
   register() {
-    console.log(this.registerForm.value)
+    if (this.profileForm.valid && this.credentialsForm.valid) {
+      const formData = {...this.credentialsForm, ...this.profileForm.value}
+      console.log('Form data: ', formData);
+    }
     // this.accountService.register(this.creds).subscribe({
     //   next: response => {
     //     console.log(response);
