@@ -1,7 +1,7 @@
 import {Component, inject, input, OnInit, output} from '@angular/core';
 import { RegisterCreds, User } from '../../../types';
 import { AccountService } from '../../../core/services';
-import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {JsonPipe} from '@angular/common';
 
 @Component({
@@ -10,22 +10,18 @@ import {JsonPipe} from '@angular/common';
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
-export class Register implements OnInit{
+export class Register {
   private accountService = inject(AccountService)
   private fb = inject(FormBuilder);
 
   cancelRegister = output<boolean>();
   protected creds = {} as RegisterCreds
   protected registerForm : FormGroup = this.fb.group({
-    email: [],
-    displayName: [],
-    password: [],
-    confirmPassword: []
+    email: ['johndoe@test.com', [Validators.required, Validators.email]],
+    displayName: ['', Validators.required],
+    password: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(8)]],
+    confirmPassword: ['', Validators.required]
   });
-
-  ngOnInit(): void {
-      throw new Error("Method not implemented.");
-  }
 
 
   register() {
