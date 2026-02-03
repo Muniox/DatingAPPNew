@@ -3,10 +3,11 @@ import { RegisterCreds, User } from '../../../types';
 import { AccountService } from '../../../core/services';
 import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {JsonPipe} from '@angular/common';
+import { TextInput } from "../../../shared/text-input/text-input";
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, JsonPipe],
+  imports: [ReactiveFormsModule, JsonPipe, TextInput],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
@@ -16,8 +17,8 @@ export class Register implements OnInit {
 
   cancelRegister = output<boolean>();
   protected creds = {} as RegisterCreds
-  protected registerForm: FormGroup = this.fb.group({
-    email: ['johndoe@test.com', [Validators.required, Validators.email]],
+  protected registerForm: FormGroup = this.fb.nonNullable.group({
+    email: ['', [Validators.required, Validators.email]],
     displayName: ['', Validators.required],
     password: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(8)]],
     confirmPassword: ['', [Validators.required, this.matchValues('password')]]

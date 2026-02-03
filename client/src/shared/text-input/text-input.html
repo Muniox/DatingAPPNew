@@ -1,18 +1,26 @@
 <label class="floating-label text-left">
-  <span>{{label()}}</span>
+  <span>{{ label() }}</span>
   <input
     [type]="type()"
     class="input w-full"
-    [class.input-error]="
-      control.invalid && control.touched
-    "
+    [class.input-error]="control.invalid && control.touched"
     [class.input-success]="control.valid && control.touched"
     [formControl]="control"
     [placeholder]="label()"
   />
-  @if (
-    control.hasError('required') && control.touched
-  ) {
-    <div class="validation-hint text-error text-xs">{{label()}} is required name is required</div>
+  @if (control.touched && control.errors) {
+    <div class="validation-hint text-error text-xs">
+      @if (control.hasError('required')) {
+        {{ label() }} is required
+      } @else if (control.hasError('email')) {
+        Invalid email format
+      } @else if (control.hasError('minlength')) {
+        {{ label() }} must be at least {{ control.getError('minlength').requiredLength }} characters
+      } @else if (control.hasError('maxlength')) {
+        {{ label() }} must be at most {{ control.getError('maxlength').requiredLength }} characters
+      } @else if (control.hasError('passwordMismatch')) {
+        Passwords do not match
+      }
+    </div>
   }
 </label>
