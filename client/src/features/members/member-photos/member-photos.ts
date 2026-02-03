@@ -16,8 +16,8 @@ export class MemberPhotos implements OnInit {
   private route = inject(ActivatedRoute);
   protected photos = signal<Photo[]>([]);
   protected loading = signal<boolean>(false);
-  protected isOwnProfile = computed(() =>
-    this.accountService.currentUser()?.id === this.memberService.member()?.id
+  protected isOwnProfile = computed(
+    () => this.accountService.currentUser()?.id === this.memberService.member()?.id,
   );
 
   ngOnInit(): void {
@@ -38,6 +38,9 @@ export class MemberPhotos implements OnInit {
         this.memberService.editMode.set(false);
         this.loading.set(false);
         this.photos.update((photos) => [...photos, photo]);
+        if (!this.memberService.member()?.imageUrl) {
+          this.setMainLocalPhoto(photo);
+        }
       },
       error: (error) => {
         console.log('Error uploading image: ', error);
@@ -49,17 +52,7 @@ export class MemberPhotos implements OnInit {
   setMainPhoto(photo: Photo) {
     this.memberService.setMainPhoto(photo).subscribe({
       next: () => {
-        const currentUser = this.accountService.currentUser();
-        if (currentUser) {
-          currentUser.imageUrl = photo.url;
-          this.accountService.setCurrentUser(currentUser);
-          this.memberService.member.update((member) => {
-            if (member) {
-              return { ...member, imageUrl: photo.url };
-            }
-            return member;
-          });
-        }
+        this.setMainLocalPhoto(photo);
       },
     });
   }
@@ -70,5 +63,19 @@ export class MemberPhotos implements OnInit {
         this.photos.update((photos) => photos.filter((photo) => photo.id !== photoId));
       },
     });
+  }
+
+  private setMainLocalPhoto(photo: Photo) {
+    const currentUser = this.accountService.currentUser();
+    if (currentUser) {
+      currentUser.imageUrl = photo.url;
+      this.accountService.setCurrentUser(currentUser);
+      this.memberService.member.update((member) => {
+        if (member) {
+          return { ...member, imageUrl: photo.url };
+        }
+        return member;
+      });
+    }
   }
 }

@@ -9,13 +9,12 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { JsonPipe } from '@angular/common';
 import { TextInput } from '../../../shared/text-input/text-input';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, JsonPipe, TextInput],
+  imports: [ReactiveFormsModule, TextInput],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
