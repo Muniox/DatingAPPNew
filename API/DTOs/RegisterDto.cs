@@ -6,7 +6,7 @@ namespace API.DTOs;
 public class RegisterDto
 {
     [Required] // Required działa na "" oraz null
-    public string DisplayName {get; set;} = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
 
     [Required]
     [EmailAddress]
@@ -14,5 +14,17 @@ public class RegisterDto
 
     [Required]
     [MinLength(4)]
-    public string Password { get; set; } =string.Empty;
+    public string Password { get; set; } = string.Empty;
+
+    [Required]
+    public string Gender { get; set; } = string.Empty;
+
+    [Required]
+    public string City { get; set; } = string.Empty;
+
+    [Required]
+    public string Country { get; set; } = string.Empty;
+
+    [Required]
+    public DateOnly DateOfBirth { get; set; }
 }
