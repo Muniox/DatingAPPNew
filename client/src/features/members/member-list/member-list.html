@@ -1,7 +1,9 @@
-@let members = members$ | async;
+@let paginatedMembers = paginatedMembers$ | async;
 
-<div class="grid grid-cols-5 gap-6">
+@if (paginatedMembers?.items; as members) {
+  <div class="grid grid-cols-5 gap-6">
     @for (member of members; track member.id) {
-        <app-member-card [member]="member" />
+      <app-member-card [member]="member" />
     }
-</div>
+  </div>
+}

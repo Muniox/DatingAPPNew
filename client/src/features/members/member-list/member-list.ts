@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { MemberService } from '../../../core/services';
 import { Observable } from 'rxjs';
-import { Member } from '../../../types';
+import { Member, PaginatedResult } from '../../../types';
 import { AsyncPipe } from '@angular/common';
 import { MemberCard } from "../../member-card/member-card";
 
@@ -13,5 +13,5 @@ import { MemberCard } from "../../member-card/member-card";
 })
 export class MemberList {
   private memberService = inject(MemberService);
-  protected members$ = this.memberService.getMembers();
+  protected paginatedMembers$: Observable<PaginatedResult<Member>> = this.memberService.getMembers();
 }
