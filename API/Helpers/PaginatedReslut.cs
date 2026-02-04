@@ -6,7 +6,7 @@ namespace API.Helpers;
 public class PaginatedReslut<T>
 {
     public PaginationMetadata Metadata { get; set; } = default!;
-    public List<T> Items { get; set; }
+    public List<T> Items { get; set; } = default!;
 };
 
 public class PaginationMetadata
