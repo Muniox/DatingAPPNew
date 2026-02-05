@@ -1,6 +1,4 @@
-@let paginatedMembers = paginatedMembers$ | async;
-
-@if (paginatedMembers?.metadata; as metadata) {
+@if (paginatedMembers()?.metadata; as metadata) {
   <app-paginator
     [pageNumber]="metadata.currentPage"
     [totalCount]="metadata.totalCount"
@@ -10,7 +8,7 @@
   />
 }
 
-@if (paginatedMembers?.items; as members) {
+@if (paginatedMembers()?.items; as members) {
   <div class="grid grid-cols-5 gap-6">
     @for (member of members; track member.id) {
       <app-member-card [member]="member" />
