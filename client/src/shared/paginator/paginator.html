@@ -14,7 +14,7 @@
         <button class="btn btn-circle btn-ghost" [disabled]="pageNumber() === 1" (click)="onPageChange(pageNumber() -1)">
             &larr;
         </button>
-                <button class="btn btn-circle btn-ghost" [disabled]="pageNumber() === 1" (click)="onPageChange(pageNumber() +1)">
+                <button class="btn btn-circle btn-ghost" [disabled]="pageNumber() >= totalPages()" (click)="onPageChange(pageNumber() +1)">
             &rarr;
         </button>
     </div>

@@ -8,8 +8,9 @@ import { Component, computed, input, model, output } from '@angular/core';
 })
 export class Paginator {
   pageNumber = model(1); // model działa jednocześnie jako input i output to way binding
-  pageSize = model(10);
+  pageSize = model(5);
   totalCount = input(0);
+  totalPages = input(0);
   pageSizeOptions = input([5, 10, 20, 50]);
 
   pageChange = output<{pageNumber: number, pageSize: number}>();
