@@ -25,6 +25,7 @@ builder.Services.AddCors();
 // Services
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<LogUserActivity>();
 
 // Repositories
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
