@@ -33,6 +33,12 @@ public class MemberRepository(AppDbContext appDbContext) : IMemberRepository
             query = query.Where(x => x.Gender == memberParams.Gender);
         }
 
+        query = memberParams.OrderBy switch
+        {
+            "created" => query.OrderByDescending(x => x.Created),
+            _ => query.OrderByDescending(x => x.LastActive)
+        };
+
         var minDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-memberParams.MaxAge -1));
         var maxDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-memberParams.MinAge));
 
