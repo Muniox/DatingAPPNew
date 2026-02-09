@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, output, ViewChild } from '@angular/core';
+import { Component, ElementRef, model, OnInit, output, ViewChild } from '@angular/core';
 import { MemberParams } from '../../../types';
 import { FormsModule } from '@angular/forms';
 
@@ -12,12 +12,12 @@ export class FilterModal implements OnInit {
   @ViewChild('filterModal') modalRef!: ElementRef<HTMLDialogElement>;
   closeModal = output();
   submitData = output<MemberParams>();
-  memberParams = new MemberParams();
+  memberParams = model(new MemberParams());
 
   ngOnInit(): void {
     const filters = localStorage.getItem('filters');
     if (filters) {
-      this.memberParams = JSON.parse(filters);
+      this.memberParams.set(JSON.parse(filters));
     }
   }
 
@@ -31,17 +31,17 @@ export class FilterModal implements OnInit {
   }
 
   submit() {
-    this.submitData.emit(this.memberParams);
+    this.submitData.emit(this.memberParams());
     this.close();
   }
 
   onMinAgeChange() {
-    if (this.memberParams.minAge < 18) this.memberParams.minAge = 18;
+    if (this.memberParams().minAge < 18) this.memberParams().minAge = 18;
   }
 
   onMaxAgeChange() {
-    if (this.memberParams.maxAge < this.memberParams.minAge) {
-      this.memberParams.maxAge = this.memberParams.minAge;
+    if (this.memberParams().maxAge < this.memberParams().minAge) {
+      this.memberParams().maxAge = this.memberParams().minAge;
     }
   }
 }
