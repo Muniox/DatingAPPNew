@@ -1,6 +1,6 @@
-import { Component, ElementRef, output, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, output, ViewChild } from '@angular/core';
 import { MemberParams } from '../../../types';
-import { FormsModule } from "@angular/forms";
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-filter-modal',
@@ -8,11 +8,18 @@ import { FormsModule } from "@angular/forms";
   templateUrl: './filter-modal.html',
   styleUrl: './filter-modal.css',
 })
-export class FilterModal {
+export class FilterModal implements OnInit {
   @ViewChild('filterModal') modalRef!: ElementRef<HTMLDialogElement>;
   closeModal = output();
   submitData = output<MemberParams>();
   memberParams = new MemberParams();
+
+  ngOnInit(): void {
+    const filters = localStorage.getItem('filters');
+    if (filters) {
+      this.memberParams = JSON.parse(filters);
+    }
+  }
 
   open() {
     this.modalRef.nativeElement.showModal();
@@ -34,7 +41,7 @@ export class FilterModal {
 
   onMaxAgeChange() {
     if (this.memberParams.maxAge < this.memberParams.minAge) {
-      this.memberParams.maxAge = this.memberParams.minAge
+      this.memberParams.maxAge = this.memberParams.minAge;
     }
   }
 }
