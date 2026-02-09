@@ -4,6 +4,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { Nav } from '../layout/nav/nav';
 import { AccountService, ToastService } from '../core/services';
 import { Roles, User } from '../types';
+import { LikesService } from '../core/services/likes-service';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,7 @@ import { Roles, User } from '../types';
 })
 export class App implements OnInit, AfterViewInit {
   private accountService = inject(AccountService);
+  private likeService = inject(LikesService);
   protected router = inject(Router);
   // private http =  inject(HttpClient);
   private toastService = inject(ToastService);
@@ -25,6 +27,7 @@ export class App implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.accountService.loadUserFromStorage();
     // this.getMembers(); //będziemy implementować za pomocą serwisu!
+    this.likeService.getLikeIds();
   }
 
   ngAfterViewInit(): void {
