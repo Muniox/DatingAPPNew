@@ -21,6 +21,11 @@ public class Member
     // Navigation propterty
     [JsonIgnore]
     public AppUser User {get; set;} = null!;
+
+    [JsonIgnore]
+    public List<MemberLike> LikedByMembers { get; set; } = [];
+    [JsonIgnore]
+    public List<MemberLike> LikedMembers { get; set; } = [];
     
     [JsonIgnore]
     public List<Photo> Photos { get; set; } = [];
