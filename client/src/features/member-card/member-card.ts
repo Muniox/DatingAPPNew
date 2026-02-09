@@ -13,5 +13,18 @@ import { LikesService } from '../../core/services/likes-service';
 export class MemberCard {
   private likeService = inject(LikesService);
   member = input.required<Member>();
-  protected hasLiked = computed(() => this.likeService.likeIds().includes(this.member().id))
+  protected hasLiked = computed(() => this.likeService.likeIds().includes(this.member().id));
+
+  toggleLike(event: Event) {
+    event.stopPropagation();
+    this.likeService.toggleLike(this.member().id).subscribe({
+      next: () => {
+        if (this.hasLiked()) {
+          this.likeService.likeIds.update(ids => ids.filter(x => x !== this.member().id))
+        } else {
+          this.likeService.likeIds.update(ids => [...ids, this.member().id])
+        }
+      }
+    })
+  }
 }
