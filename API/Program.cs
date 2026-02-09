@@ -29,6 +29,7 @@ builder.Services.AddScoped<LogUserActivity>();
 
 // Repositories
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+builder.Services.AddScoped<ILikesRepository, LikesRepository>();
 
 // Configuration
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
