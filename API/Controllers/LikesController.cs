@@ -48,11 +48,12 @@ public class LikesController(ILikesRepository likesRepository) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyCollection<Member>>> GetMemberLikes(string predicate)
+    public async Task<ActionResult<PaginatedReslut<Member>>> GetMemberLikes([FromQuery] LikesParams likesParams)
     {
-        var members = await likesRepository.GetMemberLikes(predicate, User.GetMemberId());
+        likesParams.MemberId = User.GetMemberId();
+        var members = await likesRepository.GetMemberLikes(likesParams);
 
-        return Ok(members);
+        return members;
     }
 }
 
