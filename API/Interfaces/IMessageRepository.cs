@@ -1,0 +1,16 @@
+using System;
+using API.DTOs;
+using API.Entities;
+using API.Helpers;
+
+namespace API.Interfaces;
+
+public interface IMessageRepository
+{
+    void AddMessage(Message message);
+    void DeleteMessage(Message message);
+    Task<Message?> GetMessageAsync(string messageId);
+    Task<PaginatedReslut<MessageDto>> GetMessagesForMember();
+    Task<IReadOnlyCollection<MessageDto>> GetMessageThread(string currentMemberId, string recipientId);
+    Task<bool> SaveAllAsync();
+}
