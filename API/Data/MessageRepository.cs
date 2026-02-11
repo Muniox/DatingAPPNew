@@ -4,6 +4,7 @@ using API.Entities;
 using API.Extensions;
 using API.Helpers;
 using API.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
 
@@ -42,9 +43,21 @@ public class MessageRepository(AppDbContext appDbContext) : IMessageRepository
 
     }
 
-    public Task<IReadOnlyCollection<MessageDto>> GetMessageThread(string currentMemberId, string recipientId)
+    public async Task<IReadOnlyCollection<MessageDto>> GetMessageThread(string currentMemberId, string recipientId)
     {
-        throw new NotImplementedException();
+        await appDbContext.Messages
+            .Where(x => x.RecipientId == currentMemberId 
+                && x.SenderId == recipientId 
+                && x.DateRead == null)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(x => x.DateRead, DateTime.UtcNow));
+
+        return await appDbContext.Messages
+            .Where(x => (x.RecipientId == currentMemberId && x.SenderId == recipientId) 
+                || (x.SenderId == currentMemberId && x.RecipientId == recipientId))
+            .OrderBy(x => x.MessageSent)
+            .Select(MessageExtensions.ToDtoProjection())
+            .ToListAsync();
     }
 
     public async Task<bool> SaveAllAsync()
