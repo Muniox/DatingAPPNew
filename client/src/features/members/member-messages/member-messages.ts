@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, effect, ElementRef, inject, Injector, OnInit, signal, ViewChild } from '@angular/core';
 import { MessageService } from '../../../core/services/message-service';
 import { MemberService } from '../../../core/services';
 import { Message } from '../../../types/message';
@@ -13,24 +13,35 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './member-messages.css',
 })
 export class MemberMessages implements OnInit {
+  @ViewChild('messageEndRef') messageEndRef!: ElementRef<HTMLDivElement>;
+  private injector = inject(Injector);
   private messageService = inject(MessageService);
   private memberService = inject(MemberService);
   protected messages = signal<Message[]>([]);
   protected messageContent = '';
-  
+
   ngOnInit(): void {
     this.loadMessages();
+    effect(() => {
+      const currentMessages = this.messages();
+      if (currentMessages.length > 0) {
+        this.scrollToBottom();
+      }
+    }, { injector: this.injector });
   }
 
   loadMessages() {
     const memberId = this.memberService.member()?.id;
-    if(memberId) {
+    if (memberId) {
       this.messageService.getMessageThread(memberId).subscribe({
-        next: messages => this.messages.set(messages.map(message => ({
-          ...message, 
-          currentUserSender: message.senderId !== memberId
-        })))
-      })
+        next: (messages) =>
+          this.messages.set(
+            messages.map((message) => ({
+              ...message,
+              currentUserSender: message.senderId !== memberId,
+            })),
+          ),
+      });
     }
   }
 
@@ -38,13 +49,19 @@ export class MemberMessages implements OnInit {
     const recipientId = this.memberService.member()?.id;
     if (!recipientId) return;
     this.messageService.sendMessage(recipientId, this.messageContent).subscribe({
-      next: message => {
-        this.messages.update(messages => {
+      next: (message) => {
+        this.messages.update((messages) => {
           message.currentUserSender = true;
           return [...messages, message];
         });
         this.messageContent = '';
-      }
-    })
+      },
+    });
+  }
+
+  scrollToBottom() {
+    requestAnimationFrame(() => {
+      this.messageEndRef?.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    });
   }
 }
