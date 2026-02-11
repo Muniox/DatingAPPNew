@@ -43,5 +43,13 @@ public class MessagesController(IMessageRepository messageRepository, IMemberRep
 
         return message.ToDto();
     }
+
+    [HttpGet]
+    public async Task<ActionResult<PaginatedReslut<MessageDto>>> GetMessagesByContainer([FromQuery] MessageParams messageParams)
+    {
+        messageParams.MemberId = User.GetMemberId();
+
+        return await messageRepository.GetMessagesForMember(messageParams);
+    }
 }
 
