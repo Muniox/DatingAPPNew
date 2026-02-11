@@ -41,7 +41,7 @@ public class TokenService(IConfiguration config) : ITokenService
         // Claims to pary klucz-wartość opisujące użytkownika
         var claims = new List<Claim>()
         {
-            new Claim(ClaimTypes.Email, user.Email),              // Email użytkownika
+            new Claim(ClaimTypes.Email, user.Email!),              // Email użytkownika
             new Claim(ClaimTypes.NameIdentifier, user.Id)         // Unikalny identyfikator użytkownika
         };
 
