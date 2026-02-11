@@ -33,28 +33,28 @@ public class MessageRepository(AppDbContext appDbContext) : IMessageRepository
 
         query = messageParams.Container switch
         {
-            "Outbox" => query.Where(x => x.SenderId == messageParams.MemberId),
-            _ => query.Where(x => x.RecipientId == messageParams.MemberId)
+            "Outbox" => query.Where(x => x.SenderId == messageParams.MemberId && x.SenderDeleted == false),
+            _ => query.Where(x => x.RecipientId == messageParams.MemberId && x.RecipientDeleted == false)
         };
 
-        var messageQuery = query.Select(MessageExtensions.ToDtoProjection()); // Placeholder code
+        var messageQuery = query.Select(MessageExtensions.ToDtoProjection());
 
-        return await PaginationHelper.CreateAsync(messageQuery, messageParams.PageNumber, messageParams.PageSize);  
+        return await PaginationHelper.CreateAsync(messageQuery, messageParams.PageNumber, messageParams.PageSize);
 
     }
 
     public async Task<IReadOnlyCollection<MessageDto>> GetMessageThread(string currentMemberId, string recipientId)
     {
         await appDbContext.Messages
-            .Where(x => x.RecipientId == currentMemberId 
-                && x.SenderId == recipientId 
+            .Where(x => x.RecipientId == currentMemberId && x.RecipientDeleted == false
+                && x.SenderId == recipientId
                 && x.DateRead == null)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(x => x.DateRead, DateTime.UtcNow));
 
         return await appDbContext.Messages
-            .Where(x => (x.RecipientId == currentMemberId && x.SenderId == recipientId) 
-                || (x.SenderId == currentMemberId && x.RecipientId == recipientId))
+            .Where(x => (x.RecipientId == currentMemberId && x.SenderId == recipientId)
+                || (x.SenderId == currentMemberId && x.SenderDeleted == false && x.RecipientId == recipientId))
             .OrderBy(x => x.MessageSent)
             .Select(MessageExtensions.ToDtoProjection())
             .ToListAsync();
