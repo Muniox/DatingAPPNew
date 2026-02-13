@@ -18,31 +18,6 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<AppUser>
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<IdentityRole>()
-            .HasData(
-                new IdentityRole()
-                {
-                    Id = "member-id",
-                    Name = "Member",
-                    NormalizedName = "MEMBER",
-                    ConcurrencyStamp = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-                },
-                new IdentityRole()
-                {
-                    Id = "moderator-id",
-                    Name = "Moderator",
-                    NormalizedName = "MODERATOR",
-                    ConcurrencyStamp = "b2c3d4e5-f6a7-8901-bcde-f12345678901"
-                },
-                new IdentityRole()
-                {
-                    Id = "admin-id",
-                    Name = "admin",
-                    NormalizedName = "ADMIN",
-                    ConcurrencyStamp = "c3d4e5f6-a7b8-9012-cdef-123456789012"
-                }
-            );
-
         modelBuilder.Entity<Message>()
             .HasOne(x => x.Recipient)
             .WithMany(m => m.MessagesReceived)

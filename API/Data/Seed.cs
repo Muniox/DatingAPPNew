@@ -11,9 +11,17 @@ namespace API.Data;
 
 public class Seed
 {
-    public static async Task SeedUsers(UserManager<AppUser> userManager)
+    public static async Task SeedUsers(UserManager<AppUser> userManager,
+        RoleManager<IdentityRole> roleManager)
     {
         if (await userManager.Users.AnyAsync()) return;
+
+        string[] roles = ["Member", "Moderator", "Admin"];
+        foreach (var role in roles)
+        {
+            if (!await roleManager.RoleExistsAsync(role))
+                await roleManager.CreateAsync(new IdentityRole(role));
+        }
 
         var memberData = await File.ReadAllTextAsync("Data/UserSeedData.json");
         var members = JsonSerializer.Deserialize<List<SeedUserDto>>(memberData);
