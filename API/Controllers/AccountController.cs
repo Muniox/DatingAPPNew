@@ -1,11 +1,11 @@
 using System.Security.Cryptography;
-using System.Text;
 using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
 using API.Helpers;
 using API.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,17 +15,13 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class AccountController(
-    AppDbContext context,
+    UserManager<AppUser> userManager,
     ITokenService tokenService
     ) : ControllerBase
 {
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
     {
-        if (await EmailExists(registerDto.Email)) return BadRequest("Email taken");
-
-        using var hmac = new HMACSHA512();
-
         var user = new AppUser()
         {
             DisplayName = registerDto.DisplayName,
@@ -40,9 +36,17 @@ public class AccountController(
                 DateOfBirth = registerDto.DateOfBirth
             }
         };
+        var result = await userManager.CreateAsync(user, registerDto.Password);
 
-        context.Users.Add(user);
-        await context.SaveChangesAsync();
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("identity", error.Description);
+            }
+
+            return ValidationProblem();
+        }
 
         return user.ToDto(tokenService);
     }
@@ -50,18 +54,15 @@ public class AccountController(
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
     {
-        var user = await context.Users.SingleOrDefaultAsync(x => x.Email == loginDto.Email);
+        var user = await userManager.FindByEmailAsync(loginDto.Email);
 
         if (user is null) return Unauthorized("Invalid email address");
 
+        var result = await userManager.CheckPasswordAsync(user, loginDto.Password);
 
+        if (!result) return Unauthorized("Invalid password");
 
         return user.ToDto(tokenService);
-    }
-
-    private async Task<bool> EmailExists(string email)
-    {
-        return await context.Users.AnyAsync(x => x.Email!.ToLower() == email.ToLower());
     }
 }
 
