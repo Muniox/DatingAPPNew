@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using API.Entities;
 using API.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services;
@@ -11,7 +12,7 @@ namespace API.Services;
 /// Serwis odpowiedzialny za tworzenie i zarządzanie tokenami JWT (JSON Web Token)
 /// używanymi do autentykacji i autoryzacji użytkowników w aplikacji.
 /// </summary>
-public class TokenService(IConfiguration config) : ITokenService
+public class TokenService(IConfiguration config, UserManager<AppUser> userManager) : ITokenService
 {
     /// <summary>
     /// Tworzy token JWT dla uwierzytelnionego użytkownika.
@@ -24,7 +25,7 @@ public class TokenService(IConfiguration config) : ITokenService
     /// - Klucz tokenu nie został znaleziony w konfiguracji
     /// - Klucz tokenu jest krótszy niż 64 znaki (wymagane dla bezpieczeństwa)
     /// </exception>
-    public string CreateToken(AppUser user)
+    public async Task<string> CreateToken(AppUser user)
     {
         // Pobierz klucz tokenu z konfiguracji aplikacji (appsettings.json)
         // Jeśli klucz nie istnieje, rzuć wyjątek
@@ -44,6 +45,11 @@ public class TokenService(IConfiguration config) : ITokenService
             new Claim(ClaimTypes.Email, user.Email!),              // Email użytkownika
             new Claim(ClaimTypes.NameIdentifier, user.Id)         // Unikalny identyfikator użytkownika
         };
+
+
+        var roles = await userManager.GetRolesAsync(user);
+
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         // Utwórz dane uwierzytelniające do podpisania tokenu
         // Używamy algorytmu HMAC SHA512 do podpisywania
