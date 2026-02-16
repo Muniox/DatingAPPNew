@@ -48,6 +48,8 @@ public class AccountController(
             return ValidationProblem();
         }
 
+        await userManager.AddToRoleAsync(user, "Menber");
+
         return await user.ToDto(tokenService);
     }
 
