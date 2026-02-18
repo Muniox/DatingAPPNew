@@ -3,6 +3,7 @@ export interface User {
     displayName: string;
     token: string;
     imageUrl?: string;
+    roles: string[];
 }
 
 export interface LoginCreds {
