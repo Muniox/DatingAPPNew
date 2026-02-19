@@ -49,8 +49,8 @@ builder.Services.AddIdentityCore<AppUser>(options =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-       var tokenKey = builder.Configuration["TokenKey"] 
-            ?? throw new Exception("Token key not found - Program.cs");
+        var tokenKey = builder.Configuration["TokenKey"]
+             ?? throw new Exception("Token key not found - Program.cs");
 
         options.TokenValidationParameters = new TokenValidationParameters()
         {
@@ -77,7 +77,7 @@ app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionMiddleware>();
 
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials()
 .WithOrigins("http://localhost:4200", "https://localhost:4200"));
 
 app.UseAuthorization();

@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using API.Entities;
 using API.Interfaces;
@@ -59,7 +60,7 @@ public class TokenService(IConfiguration config, UserManager<AppUser> userManage
         var tokenDescriptor = new SecurityTokenDescriptor()
         {
             Subject = new ClaimsIdentity(claims),           // Tożsamość zawierająca roszczenia
-            Expires = DateTime.UtcNow.AddDays(7),           // Token wygasa po 7 dniach
+            Expires = DateTime.UtcNow.AddMinutes(7),           // Token wygasa po 7 minutach
             SigningCredentials = creds                       // Dane uwierzytelniające do podpisania
         };
 
@@ -72,4 +73,11 @@ public class TokenService(IConfiguration config, UserManager<AppUser> userManage
         // Zwróć token jako zakodowany string gotowy do wysłania do klienta
         return tokenHandler.WriteToken(token);
     }
+
+    public string GenerateRefreshToken()
+    {
+        var randomBytes = RandomNumberGenerator.GetBytes(64);
+        return Convert.ToBase64String(randomBytes);
+    }
+
 }
