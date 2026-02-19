@@ -97,7 +97,7 @@ public class AccountController(
         user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
         await userManager.UpdateAsync(user);
 
-        var cookieOptins = new CookieOptions
+        var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
@@ -105,7 +105,7 @@ public class AccountController(
             Expires = DateTime.UtcNow.AddDays(7)
         };
 
-        Response.Cookies.Append("refreshToken", refreshToken, cookieOptins);
+        Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
     }
 }
 
