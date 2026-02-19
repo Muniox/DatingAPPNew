@@ -49,7 +49,7 @@ public class AccountController(
             return ValidationProblem();
         }
 
-        await userManager.AddToRoleAsync(user, "Menber");
+        await userManager.AddToRoleAsync(user, "Member");
 
         await SetRefreshTokenCookie(user);
 
