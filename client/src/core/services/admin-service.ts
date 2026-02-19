@@ -16,7 +16,7 @@ export class AdminService {
 
   updateUserRoles(userId: string, roles: string[]) {
     return this.http.post<string[]>(this.baseUrl + 'admin/edit-roles/' + userId, {}, {
-      params: { roles }
+      params: { roles: roles.join(',') }
     })
   }
 }
