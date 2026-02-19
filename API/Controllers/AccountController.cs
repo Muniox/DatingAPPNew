@@ -105,7 +105,7 @@ public class AccountController(
             Expires = DateTime.UtcNow.AddDays(7)
         };
 
-        Response.Cookies.Append("refreshToken", refreshToken);
+        Response.Cookies.Append("refreshToken", refreshToken, cookieOptins);
     }
 }
 

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { LoginCreds, RegisterCreds, Roles, User } from '../../types';
-import { tap } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { LikesService } from './likes-service';
 
@@ -14,39 +14,78 @@ export class AccountService {
   currentUser = signal<User | null>(null);
   private baseUrl = environment.baseUrl;
 
-  loadUserFromStorage(): void {
-    const userString = localStorage.getItem(Roles.user);
-    if (userString) {
-      const user = JSON.parse(userString) as User;
-      this.currentUser.set(user);
-    }
+  refreshUserByRefreshToken(): Observable<void> {
+    return this.refreshToken().pipe(
+      tap((user) => {
+        if (user) {
+          this.setCurrentUser(user);
+          this.startTokenRefreshInterval();
+        }
+      }),
+      catchError(() => of(null)),
+      map(() => void 0),
+    );
   }
 
   register(creds: RegisterCreds) {
-    return this.http.post<User>(this.baseUrl + 'account/register', creds).pipe(
-      tap(user => {
-        if (user) this.setCurrentUser(user)
-      })
-    )
+    return this.http
+      .post<User>(this.baseUrl + 'account/register', creds, { withCredentials: true })
+      .pipe(
+        tap((user) => {
+          if (user) {
+            this.setCurrentUser(user);
+            this.startTokenRefreshInterval();
+          }
+        }),
+      );
   }
 
   login(creds: LoginCreds) {
-    return this.http.post<User>(this.baseUrl + 'account/login', creds).pipe(
-      tap((user) => {
-        if (user) this.setCurrentUser(user)
-      })
+    return this.http
+      .post<User>(this.baseUrl + 'account/login', creds, { withCredentials: true })
+      .pipe(
+        tap((user) => {
+          if (user) {
+            this.setCurrentUser(user);
+            this.startTokenRefreshInterval();
+          }
+        }),
+      );
+  }
+
+  refreshToken() {
+    return this.http.post<User>(
+      this.baseUrl + 'account/refresh-token',
+      {},
+      { withCredentials: true },
+    );
+  }
+
+  startTokenRefreshInterval() {
+    setInterval(
+      () => {
+        this.http
+          .post<User>(this.baseUrl + 'account/refresh-token', {}, { withCredentials: true })
+          .subscribe({
+            next: (user) => {
+              this.setCurrentUser(user);
+            },
+            error: () => {
+              this.logout();
+            },
+          });
+      },
+      5 * 60 * 1000,
     );
   }
 
   setCurrentUser(user: User) {
     user.roles = this.getRolesFromToken(user);
-    localStorage.setItem(Roles.user, JSON.stringify(user))
     this.currentUser.set(user);
     this.likesService.getLikeIds();
   }
 
   logout() {
-    localStorage.removeItem(Roles.user);
     localStorage.removeItem('filters');
     this.currentUser.set(null);
     this.likesService.clearLikeIds();
@@ -56,6 +95,6 @@ export class AccountService {
     const payload = user.token.split('.')[1];
     const decoded = atob(payload);
     const jsonPayload = JSON.parse(decoded);
-    return Array.isArray(jsonPayload.role) ? jsonPayload.role : [jsonPayload.role]
+    return Array.isArray(jsonPayload.role) ? jsonPayload.role : [jsonPayload.role];
   }
 }
