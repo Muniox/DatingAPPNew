@@ -30,6 +30,7 @@ builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<LogUserActivity>();
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<PresenceTracker>();
 
 // Repositories
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
