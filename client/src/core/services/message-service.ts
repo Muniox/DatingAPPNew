@@ -1,15 +1,50 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { PaginatedResult } from '../../types';
 import { Message } from '../../types/message';
+import { AccountService } from './account-service';
+import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MessageService {
   private baseUrl = environment.baseUrl;
+  private hubUrl = environment.hubUrl;
   private http = inject(HttpClient);
+  private accountService = inject(AccountService);
+  private hubConnection?: HubConnection;
+  messageThread = signal<Message[]>([]);
+
+  createHubConnection(otherUserId: string) {
+    const currentUser = this.accountService.currentUser();
+    if (!currentUser) return;
+
+    this.hubConnection = new HubConnectionBuilder()
+      .withUrl(this.hubUrl + 'messages?userId=' + otherUserId, {
+        accessTokenFactory: () => currentUser.token,
+      })
+      .withAutomaticReconnect()
+      .build();
+
+    this.hubConnection.start().catch((error) => console.log(error));
+
+    this.hubConnection.on('ReceiveMessageThread', (messages: Message[]) => {
+      this.messageThread.set(
+        messages.map((message) => ({
+          ...message,
+          currentUserSender: message.senderId !== otherUserId,
+        })),
+      );
+    });
+  }
+
+  stopeHubConnection() {
+    if (this.hubConnection?.state === HubConnectionState.Connected) {
+      this.hubConnection.stop().catch(error => console.log(error));
+    }
+  }
 
   getMessage(container: string, pageNumber: number, pageSize: number) {
     let params = new HttpParams();
@@ -17,9 +52,9 @@ export class MessageService {
     params = params
       .append('pageNumber', pageNumber)
       .append('pageSize', pageSize)
-      .append('container', container)
+      .append('container', container);
 
-      return this.http.get<PaginatedResult<Message>>(this.baseUrl + 'messages', {params})
+    return this.http.get<PaginatedResult<Message>>(this.baseUrl + 'messages', { params });
   }
 
   getMessageThread(memberId: string) {
@@ -27,7 +62,7 @@ export class MessageService {
   }
 
   sendMessage(recipientId: string, content: string) {
-    return this.http.post<Message>(this.baseUrl +  'messages', {recipientId, content})
+    return this.http.post<Message>(this.baseUrl + 'messages', { recipientId, content });
   }
 
   deleteMessage(id: string) {
