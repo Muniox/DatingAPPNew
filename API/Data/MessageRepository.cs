@@ -12,7 +12,7 @@ public class MessageRepository(AppDbContext appDbContext) : IMessageRepository
 {
     public void AddGroup(Group group)
     {
-        throw new NotImplementedException();
+        appDbContext.Groups.Add(group);
     }
 
     public void AddMessage(Message message)
@@ -25,19 +25,24 @@ public class MessageRepository(AppDbContext appDbContext) : IMessageRepository
         appDbContext.Messages.Remove(message);
     }
 
-    public Task<Connection?> GetConnection(string connectionId)
+    public async Task<Connection?> GetConnection(string connectionId)
     {
-        throw new NotImplementedException();
+        return await appDbContext.Connections.FindAsync(connectionId);
     }
 
-    public Task<Group?> GetGroupForConnection(string connectionId)
+    public async Task<Group?> GetGroupForConnection(string connectionId)
     {
-        throw new NotImplementedException();
+        return await appDbContext.Groups
+            .Include(x => x.Connections)
+            .Where(x => x.Connections.Any(c => c.ConnectionId == connectionId))
+            .FirstOrDefaultAsync();
     }
 
-    public Task<Group?> GetMessaageGroup(string groupName)
+    public async Task<Group?> GetMessaageGroup(string groupName)
     {
-        throw new NotImplementedException();
+        return await appDbContext.Groups
+            .Include(x => x.Connections)
+            .FirstOrDefaultAsync(x => x.Name == groupName);
     }
 
     public async Task<Message?> GetMessageAsync(string messageId)
@@ -80,9 +85,11 @@ public class MessageRepository(AppDbContext appDbContext) : IMessageRepository
             .ToListAsync();
     }
 
-    public Task RemoveConnection(string connectionId)
+    public async Task RemoveConnection(string connectionId)
     {
-        throw new NotImplementedException();
+        await appDbContext.Connections
+            .Where(x => x.ConnectionId == connectionId)
+            .ExecuteDeleteAsync();
     }
 
     public async Task<bool> SaveAllAsync()
