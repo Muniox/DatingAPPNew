@@ -10,6 +10,11 @@ namespace API.Data;
 
 public class MessageRepository(AppDbContext appDbContext) : IMessageRepository
 {
+    public void AddGroup(Group group)
+    {
+        throw new NotImplementedException();
+    }
+
     public void AddMessage(Message message)
     {
         appDbContext.Add(message);
@@ -18,6 +23,21 @@ public class MessageRepository(AppDbContext appDbContext) : IMessageRepository
     public void DeleteMessage(Message message)
     {
         appDbContext.Messages.Remove(message);
+    }
+
+    public Task<Connection?> GetConnection(string connectionId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Group?> GetGroupForConnection(string connectionId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Group?> GetMessaageGroup(string groupName)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<Message?> GetMessageAsync(string messageId)
@@ -58,6 +78,11 @@ public class MessageRepository(AppDbContext appDbContext) : IMessageRepository
             .OrderBy(x => x.MessageSent)
             .Select(MessageExtensions.ToDtoProjection())
             .ToListAsync();
+    }
+
+    public Task RemoveConnection(string connectionId)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<bool> SaveAllAsync()
