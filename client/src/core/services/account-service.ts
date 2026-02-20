@@ -1,9 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { LoginCreds, RegisterCreds, Roles, User } from '../../types';
+import { LoginCreds, RegisterCreds, User } from '../../types';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { LikesService } from './likes-service';
+import { PresenceService } from './presence-service';
+import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +13,7 @@ import { LikesService } from './likes-service';
 export class AccountService {
   private http = inject(HttpClient);
   private likesService = inject(LikesService);
+  private prsenceService = inject(PresenceService)
   currentUser = signal<User | null>(null);
   private baseUrl = environment.baseUrl;
 
@@ -83,6 +86,9 @@ export class AccountService {
     user.roles = this.getRolesFromToken(user);
     this.currentUser.set(user);
     this.likesService.getLikeIds();
+    if (this.prsenceService.hubConnection?.state !== HubConnectionState.Connected) {
+      this.prsenceService.createHubConnection(user);
+    }
   }
 
   logout() {
