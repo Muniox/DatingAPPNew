@@ -6,15 +6,13 @@
         [class.chat-start]="!message.currentUserSender"
         [class.chat-end]="message.currentUserSender"
       >
-        <div
-          class="chat-image avatar"
-          [class.avatar.online]="
-            presenceService.onlineUsers().includes(message.senderId || message.recipientId)
-          "
-        >
+        <div class="chat-image avatar">
           <div class="w-10 rounded-full">
             <img alt="image of user" [src]="message.senderImageUrl || '/user.png'" />
           </div>
+          @if (!message.currentUserSender && presenceService.onlineUsers().includes(message.senderId)) {
+            <span class="status status-success absolute top-0 right-0"></span>
+          }
         </div>
         <div class="chat-header">
           {{ message.senderDisplayName }}

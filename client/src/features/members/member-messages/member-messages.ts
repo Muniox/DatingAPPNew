@@ -22,7 +22,6 @@ export class MemberMessages implements OnInit {
   protected presenceService = inject(PresenceService);
   private route = inject(ActivatedRoute);
 
-  protected messages = signal<Message[]>([]);
   protected messageContent = '';
 
   ngOnInit(): void {
@@ -34,40 +33,18 @@ export class MemberMessages implements OnInit {
       }
     })
     effect(() => {
-      const currentMessages = this.messages();
+      const currentMessages = this.messageService.messageThread();
       if (currentMessages.length > 0) {
         this.scrollToBottom();
       }
     }, { injector: this.injector });
   }
 
-  loadMessages() {
-    const memberId = this.memberService.member()?.id;
-    if (memberId) {
-      this.messageService.getMessageThread(memberId).subscribe({
-        next: (messages) =>
-          this.messages.set(
-            messages.map((message) => ({
-              ...message,
-              currentUserSender: message.senderId !== memberId,
-            })),
-          ),
-      });
-    }
-  }
-
-  sendMessage() {
+  async sendMessage() {
     const recipientId = this.memberService.member()?.id;
     if (!recipientId) return;
-    this.messageService.sendMessage(recipientId, this.messageContent).subscribe({
-      next: (message) => {
-        this.messages.update((messages) => {
-          message.currentUserSender = true;
-          return [...messages, message];
-        });
-        this.messageContent = '';
-      },
-    });
+    await this.messageService.sendMessage(recipientId, this.messageContent);
+    this.messageContent = '';
   }
 
   scrollToBottom() {
