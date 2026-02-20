@@ -25,21 +25,26 @@ export class PresenceService {
 
     this.hubConnection.start().catch((error) => console.log(error));
 
-    this.hubConnection.on('UserOnline', userId => {
-      this.onlineUsers.update(users => [...users, userId]);
+    this.hubConnection.on('UserOnline', (userId) => {
+      this.onlineUsers.update((users) => [...users, userId]);
     });
 
-    this.hubConnection.on('UserOffline', userId => {
-      this.onlineUsers.update(users => users.filter(x => x !== userId))
+    this.hubConnection.on('UserOffline', (userId) => {
+      this.onlineUsers.update((users) => users.filter((x) => x !== userId));
     });
 
-    this.hubConnection.on('GetOnlineUsers', usersIds => {
+    this.hubConnection.on('GetOnlineUsers', (usersIds) => {
       this.onlineUsers.set(usersIds);
-    })
+    });
 
     this.hubConnection.on('NewMessageReceived', (message: Message) => {
-      this.toast.info(message.senderDisplayName + ' has sent you a new message')
-    })
+      this.toast.info(
+        message.senderDisplayName + ' has sent you a new message',
+        10000,
+        message.senderImageUrl,
+        `/members/${message.senderId}/messages`,
+      );
+    });
   }
 
   stopHubConnection() {

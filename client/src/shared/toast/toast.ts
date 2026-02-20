@@ -1,4 +1,5 @@
-import {Component, input, OnDestroy, OnInit, output} from '@angular/core';
+import {Component, inject, input, OnDestroy, OnInit, output} from '@angular/core';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-toast',
@@ -7,11 +8,15 @@ import {Component, input, OnDestroy, OnInit, output} from '@angular/core';
   styleUrl: './toast.css',
 })
 export class Toast implements OnInit, OnDestroy {
+  private router = inject(Router);
+
   close = output<void>();
 
   message = input.required<string>();
   alertClass = input<string>();
   duration = input<number>(5000);
+  avatar? = input<string | null>(null);
+  route = input<string | null>(null);
 
   private timeoutId?: ReturnType<typeof setTimeout>;
 
@@ -21,6 +26,14 @@ export class Toast implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.clearTimer();
+  }
+
+  navigateToRoute(): void {
+    const route = this.route();
+    if (route) {
+      this.router.navigateByUrl(route);
+      this.closeToast();
+    }
   }
 
   closeToast(): void {
@@ -41,4 +54,6 @@ export class Toast implements OnInit, OnDestroy {
       this.timeoutId = undefined;
     }
   }
+
+  
 }

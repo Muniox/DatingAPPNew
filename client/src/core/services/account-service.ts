@@ -92,6 +92,7 @@ export class AccountService {
   }
 
   logout() {
+    this.prsenceService.stopHubConnection();
     localStorage.removeItem('filters');
     this.currentUser.set(null);
     this.likesService.clearLikeIds();
