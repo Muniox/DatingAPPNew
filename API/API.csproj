@@ -28,6 +28,7 @@
 	<Content Update="@(Content)">
 		<Visible Condition="'%(NuGetItemType)' == 'Content'">false</Visible>
 	</Content>
+	<Folder Include="SignalR\" />
   </ItemGroup>
 
 </Project>
