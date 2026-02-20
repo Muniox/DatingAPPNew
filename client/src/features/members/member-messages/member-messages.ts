@@ -5,6 +5,7 @@ import { Message } from '../../../types/message';
 import { DatePipe } from '@angular/common';
 import { TimeAgoPipe } from '../../../core/pipes/time-ago-pipe';
 import { FormsModule } from '@angular/forms';
+import { PresenceService } from '../../../core/services/presence-service';
 
 @Component({
   selector: 'app-member-messages',
@@ -17,6 +18,8 @@ export class MemberMessages implements OnInit {
   private injector = inject(Injector);
   private messageService = inject(MessageService);
   private memberService = inject(MemberService);
+  protected presenceService = inject(PresenceService);
+
   protected messages = signal<Message[]>([]);
   protected messageContent = '';
 

@@ -6,9 +6,14 @@
         [class.chat-start]="!message.currentUserSender"
         [class.chat-end]="message.currentUserSender"
       >
-        <div class="chat-image avatar">
+        <div
+          class="chat-image avatar"
+          [class.avatar.online]="
+            presenceService.onlineUsers().includes(message.senderId || message.recipientId)
+          "
+        >
           <div class="w-10 rounded-full">
-            <img alt="image of user" [src]="message.senderImageUrl" />
+            <img alt="image of user" [src]="message.senderImageUrl || '/user.png'" />
           </div>
         </div>
         <div class="chat-header">
@@ -17,11 +22,11 @@
         </div>
         <div class="chat-bubble">{{ message.content }}</div>
         @if (message.currentUserSender && message.dateRead) {
-            <div class="chat-footer opacity-50">Seen {{message.dateRead | timeAgo }}</div>
+          <div class="chat-footer opacity-50">Seen {{ message.dateRead | timeAgo }}</div>
         } @else if (message.currentUserSender && !message.dateRead) {
-            <div class="chat-footer opacity-50">Not read</div>
+          <div class="chat-footer opacity-50">Not read</div>
         } @else {
-            <div class="chat-footer opacity-50">Delivered</div>
+          <div class="chat-footer opacity-50">Delivered</div>
         }
       </div>
     }
@@ -29,7 +34,13 @@
   </div>
 
   <div class="flex join w-full">
-    <input type="text" [(ngModel)]="messageContent" class="input w-full" placeholder="Enter your message" (keydown.enter)="sendMessage()">
+    <input
+      type="text"
+      [(ngModel)]="messageContent"
+      class="input w-full"
+      placeholder="Enter your message"
+      (keydown.enter)="sendMessage()"
+    />
     <button (click)="sendMessage()" type="submit" class="btn btn-primary join-item">Send</button>
   </div>
 </div>
