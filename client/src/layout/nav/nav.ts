@@ -1,6 +1,6 @@
 import { Component, DOCUMENT, inject, OnInit, Renderer2, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink, RouterLinkActive } from "@angular/router";
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ToastService, AccountService } from '../../core/services';
 import { themes } from '../theme';
 import { BusyService } from '../../core/services/busy-service';
@@ -22,10 +22,15 @@ export class Nav implements OnInit {
   protected creds: any = {};
   protected selectedTheme = signal<string>(localStorage.getItem('theme') || 'light');
   protected themes = themes;
-
+  protected loading = signal(false);
 
   ngOnInit(): void {
     this.renderer.setAttribute(this.document.documentElement, 'data-theme', this.selectedTheme());
+  }
+
+  handleSelectUserItem() {
+    const elem = this.document.activeElement as HTMLDivElement;
+    if (elem) elem.blur();
   }
 
   handleSelectTheme(theme: string) {
@@ -36,20 +41,23 @@ export class Nav implements OnInit {
     if (elem) elem.blur();
   }
 
-
   login() {
+    this.loading.set(true);
     this.accountService.login(this.creds).subscribe({
-      next: result => {
+      next: (result) => {
         this.router.navigateByUrl('/members');
-        this.toast.success('Logged in successfully')
+        this.toast.success('Logged in successfully');
         console.log(result);
         this.creds = {};
       },
-      error: error => {
-        this.toast.error(error.error)
+      error: (error) => {
+        this.toast.error(error.error);
         console.log(error.error);
-      }
-    })
+      },
+      complete: () => {
+        this.loading.set(false);
+      },
+    });
   }
 
   logout() {

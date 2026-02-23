@@ -13,7 +13,7 @@ import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 export class AccountService {
   private http = inject(HttpClient);
   private likesService = inject(LikesService);
-  private prsenceService = inject(PresenceService)
+  private prsenceService = inject(PresenceService);
   currentUser = signal<User | null>(null);
   private baseUrl = environment.baseUrl;
 
@@ -92,10 +92,14 @@ export class AccountService {
   }
 
   logout() {
-    this.prsenceService.stopHubConnection();
-    localStorage.removeItem('filters');
-    this.currentUser.set(null);
-    this.likesService.clearLikeIds();
+    this.http.post(this.baseUrl + 'account/logout', {}, { withCredentials: true }).subscribe({
+      next: () => {
+        this.prsenceService.stopHubConnection();
+        localStorage.removeItem('filters');
+        this.currentUser.set(null);
+        this.likesService.clearLikeIds();
+      },
+    });
   }
 
   private getRolesFromToken(user: User): string[] {

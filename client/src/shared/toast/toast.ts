@@ -15,7 +15,7 @@ export class Toast implements OnInit, OnDestroy {
   message = input.required<string>();
   alertClass = input<string>();
   duration = input<number>(5000);
-  avatar? = input<string | null>(null);
+  avatar = input<string | null>(null);
   route = input<string | null>(null);
 
   private timeoutId?: ReturnType<typeof setTimeout>;
