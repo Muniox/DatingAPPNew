@@ -32,10 +32,8 @@ builder.Services.AddScoped<LogUserActivity>();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<PresenceTracker>();
 
-// Repositories
-builder.Services.AddScoped<IMemberRepository, MemberRepository>();
-builder.Services.AddScoped<ILikesRepository, LikesRepository>();
-builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+// Unit of Work
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Configuration
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
