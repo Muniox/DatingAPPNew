@@ -5,10 +5,11 @@ import { Nav } from '../layout/nav/nav';
 import { ToastService } from '../core/services';
 import { Roles, User } from '../types';
 import { LikesService } from '../core/services/likes-service';
+import { ConfirmDialog } from "../shared/confirm-dialog/confirm-dialog";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Nav],
+  imports: [RouterOutlet, Nav, ConfirmDialog],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
