@@ -12,7 +12,6 @@ public interface IMessageRepository
     Task<Message?> GetMessageAsync(string messageId);
     Task<PaginatedReslut<MessageDto>> GetMessagesForMember(MessageParams messageParams);
     Task<IReadOnlyCollection<MessageDto>> GetMessageThread(string currentMemberId, string recipientId);
-    Task<bool> SaveAllAsync();
     void AddGroup(Group group);
     Task RemoveConnection(string connectionId);
     Task<Connection?> GetConnection(string connectionId);

@@ -13,14 +13,14 @@ namespace API.Controllers;
 [ServiceFilter(typeof(LogUserActivity))]
 [Route("api/[controller]")]
 [ApiController]
-public class MessagesController(IMessageRepository messageRepository, IMemberRepository memberRepository) : ControllerBase
+public class MessagesController(IUnitOfWork uow) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<MessageDto>> CreateMessage(CreateMessageDto createMessageDto)
     {
-        var sender = await memberRepository.GetMemberByIdAsync(User.GetMemberId());
+        var sender = await uow.MemberRepository.GetMemberByIdAsync(User.GetMemberId());
 
-        var recipient = await memberRepository.GetMemberByIdAsync(createMessageDto.RecipientId);
+        var recipient = await uow.MemberRepository.GetMemberByIdAsync(createMessageDto.RecipientId);
 
         if (recipient is null || sender is null || sender.Id == createMessageDto.RecipientId)
         {
@@ -34,9 +34,9 @@ public class MessagesController(IMessageRepository messageRepository, IMemberRep
             Content = createMessageDto.Content
         };
 
-        messageRepository.AddMessage(message);
+        uow.MessageRepository.AddMessage(message);
 
-        if (!await messageRepository.SaveAllAsync())
+        if (!await uow.Complete())
         {
             return BadRequest("Failed to send message");
         }
@@ -49,13 +49,13 @@ public class MessagesController(IMessageRepository messageRepository, IMemberRep
     {
         messageParams.MemberId = User.GetMemberId();
 
-        return await messageRepository.GetMessagesForMember(messageParams);
+        return await uow.MessageRepository.GetMessagesForMember(messageParams);
     }
 
     [HttpGet("thread/{recipientId}")]
     public async Task <ActionResult<IReadOnlyCollection<MessageDto>>> GetMessageThread(string recipientId)
     {
-        return Ok(await messageRepository.GetMessageThread(User.GetMemberId(), recipientId));
+        return Ok(await uow.MessageRepository.GetMessageThread(User.GetMemberId(), recipientId));
     }
 
     [HttpDelete("{id}")]
@@ -63,7 +63,7 @@ public class MessagesController(IMessageRepository messageRepository, IMemberRep
     {
         var memberId = User.GetMemberId();
 
-        var message = await messageRepository.GetMessageAsync(id);
+        var message = await uow.MessageRepository.GetMessageAsync(id);
 
         if (message is null) return BadRequest("Cannot delete this message");
 
@@ -72,10 +72,10 @@ public class MessagesController(IMessageRepository messageRepository, IMemberRep
 
         if (message is {SenderDeleted: true, RecipientDeleted: true})
         {
-            messageRepository.DeleteMessage(message);
+            uow.MessageRepository.DeleteMessage(message);
         }
 
-        if (!await messageRepository.SaveAllAsync()) BadRequest("Problem deleting the message");
+        if (!await uow.Complete()) BadRequest("Problem deleting the message");
 
         return Ok();
     }

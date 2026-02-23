@@ -55,11 +55,6 @@ public class MemberRepository(AppDbContext appDbContext) : IMemberRepository
             .ToListAsync();
     }
 
-    public async Task<bool> SaveAllAsync()
-    {
-        return await appDbContext.SaveChangesAsync() > 0;
-    }
-
     public void Update(Member member)
     {
         appDbContext.Entry(member).State = EntityState.Modified;
